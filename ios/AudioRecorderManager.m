@@ -64,12 +64,16 @@ RCT_EXPORT_MODULE();
   }
 }
 
++ (BOOL)requiresMainQueueSetup{
+  return YES;
+}
+
 - (void)stopProgressTimer {
   [_progressUpdateTimer invalidate];
 }
 
 - (void)startProgressTimer {
-  _progressUpdateInterval = 250;
+  //_progressUpdateInterval = 250;
   //_prevProgressUpdateTime = nil;
 
   [self stopProgressTimer];
@@ -121,7 +125,7 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode includeBase64:(BOOL)includeBase64)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode includeBase64:(BOOL)includeBase64 progressUpdateInterval:(int)progressUpdateInterval)
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
@@ -135,6 +139,12 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
   _meteringEnabled = NO;
   _includeBase64 = NO;
+  _progressUpdateInterval = 100;
+
+   // Set default progressUpdateInterval
+  if (progressUpdateInterval != nil) {
+    _progressUpdateInterval = progressUpdateInterval;
+  }
 
   // Set audio quality from options
   if (quality != nil) {
